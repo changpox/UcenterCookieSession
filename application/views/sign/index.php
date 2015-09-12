@@ -95,7 +95,7 @@ body{
             <div id="signin">登陆</div>
             <div style="clear:both;"></div>
             <div class="signup-wrapper">
-                <form method='post' action="/sign">
+                <form method='post' action="/sign/signup">
                     <input class="input-wrapper" required type="text" name="username"  placeholder="用户名"/>
                     <div id="username-error" class="error-tip" style="display:none">！姓名要在6-32个字符之间</div>
                     <input class="input-wrapper" required type="text" name="email"     placeholder="邮箱"/>

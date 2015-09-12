@@ -14,6 +14,7 @@ class Sign extends CI_Controller{
 	}
 	public function signup()
 	{
+		echo "你一定登陆了";
 	
 	}
 	public function signin()
