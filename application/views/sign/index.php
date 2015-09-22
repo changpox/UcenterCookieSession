@@ -39,13 +39,13 @@ body{
    color: #FFF;
    padding-top:20px;
 }
-#signup{
+#top-signup{
     float: left;
 }
-#signin{
+#top-signin{
     float: right;
 }
-#signup:hover,#signin:hover{
+#top-signup:hover,#top-signin:hover{
     cursor: pointer;
 }
 .input-wrapper {
@@ -91,23 +91,27 @@ body{
     <div class="inner-wrapper" >
         <div class="inner-logo"> share </div>
         <div class="inner-sign">
-            <div id="signup">注册</div>
-            <div id="signin">登陆</div>
+            <div id="top-signup">注册</div>
+            <div id="top-signin">登陆</div>
             <div style="clear:both;"></div>
-            <div class="signup-wrapper">
-                <form method='post' action="/sign/signup">
-                    <input class="input-wrapper" required type="text" name="username"  placeholder="用户名"/>
-                    <div id="username-error" class="error-tip" style="display:none">！姓名要在6-32个字符之间</div>
-                    <input class="input-wrapper" required type="text" name="email"     placeholder="邮箱"/>
-                    <div id="email-error" class="error-tip" style="display:none">！邮箱格式不正确</div>
-                    <input class="input-wrapper" required type="password" name="password"  placeholder="密码(不少于6位)">
-                    <div id="password-error" class="error-tip" style="display:none">！至少包含字母和数字，6-16个字符</div>
-                    <input class="input-wrapper" required type="password" name="password2" placeholder="再次输入密码"/>
-                    <div id="username-error" class="error-tip" style="display:none">！两次输入密码不一致</div>
-                    <button class="signup-btn disable" type="submit" disabled="true" >注册 share</button>
-                </form>
+            <div id="signup" class="signup-wrapper" style="display:none;">
+                <input class="input-wrapper" required type="text" name="username"  placeholder="用户名"/>
+                <div id="username-error" class="error-tip" style="display:none">！姓名要在6-32个字符之间</div>
+                <input class="input-wrapper" required type="text" name="email"     placeholder="邮箱"/>
+                <div id="email-error" class="error-tip" style="display:none">！邮箱格式不正确</div>
+                <input class="input-wrapper" required type="password" name="password"  placeholder="密码(不少于6位)">
+                <div id="password-error" class="error-tip" style="display:none">！至少包含字母和数字，6-16个字符</div>
+                <input class="input-wrapper" required type="password" name="password2" placeholder="再次输入密码"/>
+                <div id="username-error" class="error-tip" style="display:none">！两次输入密码不一致</div>
+                <button id="btn-signup" class="signup-btn disable" type="submit" disabled="true" >注册 share</button>
             </div>
-            <div class="signin-wrapper"></div>
+            <div id="signin" class="signin-wrapper">
+                <input class="input-wrapper" required type="text" name="login-username"  placeholder="用户名"/>
+                <div id="login-username-error" class="error-tip" style="display:none">用户名不能为空</div>
+                <input class="input-wrapper" required type="password" name="login-password"  placeholder="密码">
+                <div id="login-password-error" class="error-tip" style="display:none">密码不能为空</div>
+                <button id="btn-signin" class="signup-btn enable" type="submit" >登&nbsp&nbsp录</button>
+            </div>
         </div>
     </div>
 </div>
@@ -146,11 +150,20 @@ body{
 <script type="text/javascript">
 $(document).ready(function()
 {   
+    //绑定顶部注册｜登陆按钮
+    $('#top-signup').bind('click',function(event){
+       $('#signin').hide(); 
+       $('#signup').show();
+    });
+    $('#top-signin').bind('click',function(event){
+       $('#signup').hide();
+       $('#signin').show(); 
+    });
     var isName = false;
     var isEmail = false;
     var isPasswd = false;
     var isPasswd2 =false;
-    //判断注册按钮是可以点击
+    //判断注册按钮是否可以点击
     function valid_btn()
     {
         if (isName&&isEmail&&isPasswd&&isPasswd2) 
@@ -166,15 +179,15 @@ $(document).ready(function()
     }
     //绑定用户名验证
     $("input[name='username']").bind('blur', function(event){
-        if(Utils.isName($(this).val()))
-        {
-            $(this).next().hide();
-            isName = true;
-        }else{
-            $(this).next().show();
-            isName = false;
-        }
-        valid_btn();
+       if(Utils.isName($(this).val()))
+       {
+           $(this).next().hide();
+           isName = true;
+       }else{
+           $(this).next().show();
+           isName = false;
+       }
+       valid_btn();
     });
     //绑定邮箱验证
     $("input[name='email']").bind('blur', function(event){
@@ -199,14 +212,13 @@ $(document).ready(function()
             isPasswd = false;
         }
         valid_btn();
-
     });
 
     //绑定重复输入密码验证
     $("input[name='password2']").bind('blur',function(){
-        var password = $("input[name='password']").val();
-        var password2 = $(this).val();
-       if (password2 == password) 
+        var password = $("input[name='password']").val(); 
+        var password2 = $(this).val(); 
+        if (password2 == password)
         {
             $(this).next().hide();
             isPasswd2 = true;
@@ -216,6 +228,87 @@ $(document).ready(function()
         }
         valid_btn();
     });
+    //绑定注册按钮
+    $('#btn-signup').bind('click',function(){
+        var url = '/Sign/signup';
+        var username = $("input[name='username']").val();
+        var email = $("input[name='email']").val();
+        var password = $("input[name='password']").val();
+        var password2 = $("input[name='password2']").val();
+        var data = {
+            'username':username,
+            'email':email,
+            'password':password,
+            'password2':password2
+        };
+        
+        $.ajax({
+            url:url,
+            type:'post',
+            data:data,
+            dataType:'json',
+            success:function(result){
+                if (true == result.num) 
+                {
+                    alert('注册成功');
+                };
+            }
+        });
+    });
+    //绑定用户名输入框
+    $("input[name='login-username']").bind('blur',function(){
+        if($(this).val().length == 0)
+        {
+            $(this).next().show();
+        }
+        else
+        {
+            $(this).next().hide();
+        }
+
+    });
+    //绑定密码输入框
+    $("input[name='login-password']").bind('blur',function(){
+        if($(this).val().length == 0)
+        {
+            $(this).next().show();
+        }
+        else
+        {
+            $(this).next().hide();
+        }
+    });
+    //绑定登录按钮
+    $('#btn-signin').bind('click',function(){
+       var login_username = $("input[name='login-username']").val(); 
+       var login_passwd   = $("input[name='login-password']").val();
+
+       if (login_username.length == 0 || login_passwd.length == 0)
+        return;
+
+        var url = "/Sign/signin";
+        var data = {
+            "login_username":login_username,
+            "login_passwd":login_passwd
+        }
+        $.ajax({
+            url:url,
+            type:'post',
+            data:data,
+            dataType:'json',
+            success:function(result){
+                if (true == result.num)
+                {
+                    alert('登陆成功!');
+                };
+            }
+        });
+
+    });
+
+
+
+
 
 });
 </script>

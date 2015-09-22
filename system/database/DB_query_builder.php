@@ -1592,7 +1592,7 @@ abstract class CI_DB_query_builder extends CI_DB_driver {
 			$this->set($set, '', $escape);
 		}
 
-		if ($this->_validate_insert($table) === FALSE)
+ 		if ($this->_validate_insert($table) === FALSE)
 		{
 			return FALSE;
 		}
