@@ -67,11 +67,12 @@ class Sign extends CI_Controller{
 		$result = $this->sign_model->signin($login_username,$login_passwd);
 		if ( 1 == $result)
 		{
-            $this->lb_base_lib->echo_json_result(1,"signin success");
+
+      $this->lb_base_lib->echo_json_result(1,"signin success");
 		}
 		else
 		{
-            $this->lb_base_lib->echo_json_result(-1,"signin success");
+      $this->lb_base_lib->echo_json_result(-1,"signin success");
 		}
 	}
 	public function signout()
