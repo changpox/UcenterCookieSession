@@ -61,7 +61,7 @@ class Sign extends CI_Controller{
 	/*
 	*用户名和口令：
 			正则表达式限制用户输入口令；
-			密码加密保存；
+			密码加密保存 md5(md5(passwd+salt))；
 			允许浏览器保存口令；
 			口令在网上传输协议http;
 	*用户登陆状态：因为http是无状态的协议，每次请求都是独立的， 所以这个协议无
@@ -94,19 +94,28 @@ class Sign extends CI_Controller{
 	//登陆接口
 	public function signin()
 	{
-		$login_username = addslashes(trim($this->input->post('login_username')));
+        		$login_username = addslashes(trim($this->input->post('login_username')));
 		$login_passwd   = addslashes(trim($this->input->post('login_passwd')));
+		$user = $this->sign_model->get_user_by_username($login_username);
 
-		$result = $this->sign_model->signin($login_username,$login_passwd);
-		if ( 1 == $result)
+		if(empty($user))
 		{
+      $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
+		}
+
+		$login_passwd = md5(md5($login_passwd).$user->salt);
+		if ($login_passwd == $user->password)
+		{
+			$last_signin_ip = $this->lb_base_lib->real_ip();
+			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
 
       $this->lb_base_lib->echo_json_result(1,"signin success");
 		}
 		else
 		{
-      $this->lb_base_lib->echo_json_result(-1,"signin success");
+      $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
 		}
+
 	}
 	public function signout()
 	{
