@@ -299,7 +299,9 @@ $(document).ready(function()
             success:function(result){
                 if (true == result.num)
                 {
-                    alert('登陆成功!');
+                    alert('登录成功!');
+                }else{
+                    alert('登录失败');
                 };
             }
         });
