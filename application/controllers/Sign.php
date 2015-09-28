@@ -94,29 +94,30 @@ class Sign extends CI_Controller{
 	//登陆接口
 	public function signin()
 	{
-        		$login_username = addslashes(trim($this->input->post('login_username')));
+        $login_username = addslashes(trim($this->input->post('login_username')));
 		$login_passwd   = addslashes(trim($this->input->post('login_passwd')));
 		$user = $this->sign_model->get_user_by_username($login_username);
 
 		if(empty($user))
 		{
-      $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
+	      $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
 		}
 
 		$login_passwd = md5(md5($login_passwd).$user->salt);
-		if ($login_passwd == $user->password)
+		if ($login_passwd == $user->password)//登录成功
 		{
 			$last_signin_ip = $this->lb_base_lib->real_ip();
 			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
 
-      $this->lb_base_lib->echo_json_result(1,"signin success");
+		    $this->lb_base_lib->echo_json_result(1,"signin success");
 		}
-		else
+		else//登陆失败
 		{
-      $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
+		    $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
 		}
 
 	}
+
 	public function signout()
 	{
 		$result = $this->sign_model->signout();
