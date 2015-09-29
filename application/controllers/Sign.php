@@ -96,6 +96,7 @@ class Sign extends CI_Controller{
 	{
         $login_username = addslashes(trim($this->input->post('login_username')));
 		$login_passwd   = addslashes(trim($this->input->post('login_passwd')));
+		//根据用户名获取数据库中用户信息
 		$user = $this->sign_model->get_user_by_username($login_username);
 
 		if(empty($user))
@@ -106,8 +107,11 @@ class Sign extends CI_Controller{
 		$login_passwd = md5(md5($login_passwd).$user->salt);
 		if ($login_passwd == $user->password)//登录成功
 		{
+			//更新最后登录ip
 			$last_signin_ip = $this->lb_base_lib->real_ip();
 			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
+			//设置cookie信息
+			$this->update_cookie($user->uid,$user->password);
 
 		    $this->lb_base_lib->echo_json_result(1,"signin success");
 		}
@@ -145,6 +149,33 @@ class Sign extends CI_Controller{
     return preg_match('/[a-zA-Z]+/', $password) && preg_match('/[0-9]+/',$password) && preg_match('/[\s\S]{6,16}$/',$password);
 	}
 
+	//设置cookie信息
+	private function update_cookie($uid,$password)
+	{
+		$expire = time()+ 3600;
+		$path = '/';
+		$domain = '';
+		$secure = false;//http
+		$httponly = true;//防止xss攻击　
+
+		$passwd = $this->gen_hash_pwd($password);
+		setcookie('uid',$uid,$expire,$path,$domain,$secure,$httponly);
+		setcookie('passwd',$passwd,$expire,$path,$domain,$secure,$httponly);
+        return;
+	}
+	//生成hash密码，保存在cookie中，此哈希密码与本地浏览器和ip信息有关
+	//如此以来，即使cookie信息被盗用，也不会登陆到我们的系统
+	private function gen_hash_pwd($password)
+	{
+		//本机ip
+		$ip    = $this->lb_base_lib->real_ip();
+		//生成salt
+		$salt  = empty($_SERVER['HTTP_USER_AGENT'])? '~!d@#2%^&?*]|([/{;:}':$_SERVER['HTTP_USER_AGENT'];
+		//生成密码
+		$passwd = md5($salt.$password.'123456'.$ip);
+
+		return $passwd;
+	}
 
 
 }
