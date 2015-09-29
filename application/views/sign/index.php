@@ -168,13 +168,13 @@ $(document).ready(function()
     {
         if (isName&&isEmail&&isPasswd&&isPasswd2) 
         {
-            $('.signup-btn').attr('disabled',false);
-            $('.signup-btn').addClass('enable');
-            $('.signup-btn').removeClass('disable');
+            $('#btn-signup').attr('disabled',false);
+            $('#btn-signup').addClass('enable');
+            $('#btn-signup').removeClass('disable');
         }else{
-            $('.signup-btn').attr('disabled',true);
-            $('.signup-btn').addClass('disable');
-            $('.signup-btn').removeClass('enable');
+            $('#btn-signup').attr('disabled',true);
+            $('#btn-signup').addClass('disable');
+            $('#btn-signup').removeClass('enable');
         }
     }
     //绑定用户名验证
@@ -299,7 +299,7 @@ $(document).ready(function()
             success:function(result){
                 if (true == result.num)
                 {
-                    alert('登录成功!');
+                    window.location.href = "/portal/";
                 }else{
                     alert('登录失败');
                 };
