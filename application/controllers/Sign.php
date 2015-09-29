@@ -13,7 +13,14 @@ class Sign extends CI_Controller{
 	}
 	public function index()
 	{
-     $this->load->view('sign/index.php');
+		$this->load->view('sign/index.php');
+		//检查是否已经登陆
+		$is_signin = $this->check_signin();
+		if ($is_signin) 
+		{
+		    header('location:/portal');
+            return;
+		}
 	}
 	//注册接口
 	public function signup()
@@ -94,15 +101,17 @@ class Sign extends CI_Controller{
 	//登陆接口
 	public function signin()
 	{
+		
+		//如果没有登录，进行登录
         $login_username = addslashes(trim($this->input->post('login_username')));
 		$login_passwd   = addslashes(trim($this->input->post('login_passwd')));
 		//根据用户名获取数据库中用户信息
 		$user = $this->sign_model->get_user_by_username($login_username);
-
+		//用户名不存在
 		if(empty($user))
 		{
-	      $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
-		}
+	      $this->lb_base_lib->echo_json_result(-1,"username dose not exists");
+		} 
 
 		$login_passwd = md5(md5($login_passwd).$user->salt);
 		if ($login_passwd == $user->password)//登录成功
@@ -111,7 +120,7 @@ class Sign extends CI_Controller{
 			$last_signin_ip = $this->lb_base_lib->real_ip();
 			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
 			//设置cookie信息
-			$this->update_cookie($user->uid,$user->password);
+			$this->update_cookie($user->username,$user->password);
 
 		    $this->lb_base_lib->echo_json_result(1,"signin success");
 		}
@@ -150,7 +159,7 @@ class Sign extends CI_Controller{
 	}
 
 	//设置cookie信息
-	private function update_cookie($uid,$password)
+	private function update_cookie($username,$password)
 	{
 		$expire = time()+ 3600;
 		$path = '/';
@@ -159,8 +168,8 @@ class Sign extends CI_Controller{
 		$httponly = true;//防止xss攻击　
 
 		$passwd = $this->gen_hash_pwd($password);
-		setcookie('uid',$uid,$expire,$path,$domain,$secure,$httponly);
-		setcookie('passwd',$passwd,$expire,$path,$domain,$secure,$httponly);
+		setcookie('username',$username,$expire,$path,$domain,$secure,$httponly);
+		setcookie('password',$passwd,$expire,$path,$domain,$secure,$httponly);
         return;
 	}
 	//生成hash密码，保存在cookie中，此哈希密码与本地浏览器和ip信息有关
@@ -175,6 +184,26 @@ class Sign extends CI_Controller{
 		$passwd = md5($salt.$password.'123456'.$ip);
 
 		return $passwd;
+	}
+
+	//根据cookie中的uid和passwd尝试自动登陆
+	public function check_signin()
+	{
+		$username = $this->input->cookie('username');
+		$password = $this->input->cookie('password');
+		if (empty($username)||empty($password))
+		{
+			return false;
+		}
+		$user = $this->sign_model->get_user_by_username($username);
+		$password_check = $this->gen_hash_pwd($user->password);
+		if ($password == $password_check) 
+		{
+			return true;
+		}
+
+		return false;
+
 	}
 
 
