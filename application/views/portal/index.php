@@ -4,9 +4,10 @@
 	<title></title>
 </head>
 <body>
-<h1>This is title;</h1>
+
 <?php
-echo session_name();
+//如果没有登录，跳转到登陆页面
+//如果已经登陆，显示wellcome
 ?>
 </body>
 </html>

@@ -8,19 +8,38 @@ class Sign extends CI_Controller{
 		$this->load->model('sign_model');
 		$this->load->helper('url_helper');
 		$this->load->library('LB_base_lib');
-		define('USER_NAME_EXISTS', -1);
-		define('USER_EMAIL_EXISTS', -2);
 	}
-	public function index()
+
+	public function index_cookie()
 	{
-		$this->load->view('sign/index.php');
-		//检查是否已经登陆
-		$is_signin = $this->check_signin();
+		// 检查是否已经登陆
+		$is_signin = $this->check_signin_by_cookie();
+		
 		if ($is_signin) 
 		{
-		    header('location:/portal');
+		    header('location:/portal/index_cookie');
             return;
 		}
+
+		$this->load->view('sign/sign_cookie');
+	}
+	public function index_session()
+	{
+		// 检查是否已经登陆
+		$is_signin = $this->check_signin_by_session();
+		
+		if ($is_signin) 
+		{
+		    header('location:/portal/index_session');
+            return;
+		}
+
+		$this->load->view('sign/sign_session');
+
+	}
+	public function index_redis()
+	{
+
 	}
 	//注册接口
 	public function signup()
@@ -73,8 +92,18 @@ class Sign extends CI_Controller{
 			口令在网上传输协议http;
 	*用户登陆状态：因为http是无状态的协议，每次请求都是独立的， 所以这个协议无
 			法记录用户访问状态，在多个页面跳转中如何知道用户登陆状态呢?
-			那就要在每个页面都要对用户身份进行认证。实现这个功能用到的技术就是浏览器的
-			cookie功能，把用户登陆信息放在客户端的cookie里;
+			那就要在每个页面都要对用户身份进行认证。
+			我将使用三种方法实现用户登录状态验证(在下才疏学浅望指正):
+			(1)在cookie中保存用户名和密码，每次页面跳转的时候进行密码验证，正确则登录状态；
+			   这个方法显然太挫了，每次都要与数据库交互显然严重影响性能，那么你可能想，直接
+			   在cookie中保存登录状态true|false，这更挫，太不安全了，不过你可以在session
+			   中保存，这就是第二种实现方法。
+			(2)在session中保存登陆状态true|false|更多信息,在页面跳转的时候获取session即可，
+			   因为session是保存在服务器中的， 所以相对安全一些,但是由于默认session是保存在
+			   文件中的，所以当用户数量上来之后，会产生大量小文件，影响系统性能，当然你可以更
+			   换文件系统，或者指定其他存储方式，比如数据库。
+			(3)解决上面所说的性能问题，这时候就要用到Inmemory的key-value型数据库了，以前memcache
+				用的比较广泛，现在redis等越来越火了。
 	*使用cookie的一些原则：
 		(1)cookie中保存用户名，登录序列，登录token;
 				用户名：明文；
@@ -99,10 +128,75 @@ class Sign extends CI_Controller{
 	*/
 
 	//登陆接口
-	public function signin()
+	public function signin_cookie()
 	{
-		
-		//如果没有登录，进行登录
+        $login_username = addslashes(trim($this->input->post('login_username')));
+		$login_passwd   = addslashes(trim($this->input->post('login_passwd')));
+		//根据用户名获取数据库中用户信息
+		$user = $this->sign_model->get_user_by_username($login_username);
+		//用户名不存在
+		if(empty($user))
+		{
+	      $this->lb_base_lib->echo_json_result(-1,"username dose not exists");
+		} 
+
+		$login_passwd = md5(md5($login_passwd).$user->salt);
+		if ($login_passwd == $user->password)//登录成功
+		{
+			//更新最后登录ip
+			$last_signin_ip = $this->lb_base_lib->real_ip();
+			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
+			//使用第一种方法，需要设置cookie信息
+			$this->update_cookie($user->username,$user->password);
+
+		    $this->lb_base_lib->echo_json_result(1,"signin success");
+		}
+		else//登陆失败
+		{
+		    $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
+		}
+
+	}
+
+	//登陆接口
+	public function signin_session()
+	{
+        $login_username = addslashes(trim($this->input->post('login_username')));
+		$login_passwd   = addslashes(trim($this->input->post('login_passwd')));
+		//根据用户名获取数据库中用户信息
+		$user = $this->sign_model->get_user_by_username($login_username);
+		//用户名不存在
+		if(empty($user))
+		{
+	      $this->lb_base_lib->echo_json_result(-1,"username dose not exists");
+		} 
+
+		$login_passwd = md5(md5($login_passwd).$user->salt);
+		if ($login_passwd == $user->password)//登录成功
+		{
+			//更新最后登录ip
+			$last_signin_ip = $this->lb_base_lib->real_ip();
+			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
+			
+			//如果使用第二种方法的话，需要在登录成功后设置session
+			session_start();
+			//如果客户端cookie没有被禁用，设置session的生命周期
+			$life_time = 3600;
+			setcookie(session_name(),session_id(),time()+$life_time,'/');
+			$_SESSION['online']=true;
+
+		    $this->lb_base_lib->echo_json_result(1,"signin success");
+		}
+		else//登陆失败
+		{
+		    $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
+		}
+
+	}
+
+	//登陆接口
+	public function signin_redis()
+	{
         $login_username = addslashes(trim($this->input->post('login_username')));
 		$login_passwd   = addslashes(trim($this->input->post('login_passwd')));
 		//根据用户名获取数据库中用户信息
@@ -121,6 +215,9 @@ class Sign extends CI_Controller{
 			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
 			//设置cookie信息
 			$this->update_cookie($user->username,$user->password);
+			//如果使用第二种方法的话，需要在登录成功后设置session
+			session_start();
+			$_SESSION['online']=true;
 
 		    $this->lb_base_lib->echo_json_result(1,"signin success");
 		}
@@ -130,7 +227,6 @@ class Sign extends CI_Controller{
 		}
 
 	}
-
 	public function signout()
 	{
 		$result = $this->sign_model->signout();
@@ -186,8 +282,8 @@ class Sign extends CI_Controller{
 		return $passwd;
 	}
 
-	//根据cookie中的uid和passwd尝试自动登陆
-	public function check_signin()
+	//第一种方法：根据cookie中保存的用户名和密码，验证用户是否在线
+	public function check_signin_by_cookie()
 	{
 		$username = $this->input->cookie('username');
 		$password = $this->input->cookie('password');
@@ -203,6 +299,13 @@ class Sign extends CI_Controller{
 		}
 
 		return false;
+	}
+	//第二种方法：根据session判断用户是否在线
+	public function check_signin_by_session()
+	{
+		session_start();
+		$result = $_SESSION['online']? true:false;
+		return $result;
 
 	}
 
