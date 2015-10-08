@@ -99,6 +99,33 @@
 
 
 <div>输入框组</div>
+<div class="input-group">
+	<span class="input-group-addon" id="basic-addon1">@</span>	
+	<input type="text" class="form-control" placeholder="username" aria-describedby="basic-addon1">
+</div>
+<div class="input-group">
+	<input type="text" class="form-control" placeholder="username" aria-describedby="basic-addon2">
+	<span class="input-group-addon" id="basic-addon2">@example.com</span>	
+</div>
+<div class="input-group">
+	<span class="input-group-addon" >$</span>	
+	<input type="text" class="form-control" >
+	<span class="input-group-addon">.00</span>
+</div>
+<div>尺寸</div>
+<div class="input-group input-group-lg">
+	<span class="input-group-addon">@</span>
+	<input type="text" class="form-control" placeholder="username">
+</div>
+<div class="input-group input-group">
+	<span class="input-group-addon">@</span>
+	<input type="text" class="form-control" placeholder="username">
+</div>
+<div class="input-group input-group-sm">
+	<span class="input-group-addon">@</span>
+	<input type="text" class="form-control" placeholder="username">
+</div>
+
 
 
 
