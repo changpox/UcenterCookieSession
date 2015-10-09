@@ -115,7 +115,7 @@ class Sign extends CI_Controller{
 				(b)登录序列用来做盗用行为检测
 	*找回密码功能
 		(1)不要使用安全问答
-		(2)通过邮件自行重置。当用户申请招呼密码时，系统生成一个md5唯一的随机字串
+		(2)通过邮件自行重置。当用户申请找回密码时，系统生成一个md5唯一的随机字串
 		　放在数据库中，然后设置上时限，给用户发一个邮件，这个链接中包含那个md5
 		　，用户通过点击那个链接来自己重置新的口令。
 		(3)更好的做法多重认证。
@@ -227,12 +227,21 @@ class Sign extends CI_Controller{
 		}
 
 	}
-	public function signout()
+	//登出
+	public function signout_cookie()
 	{
-		$result = $this->sign_model->signout();
-	
-	
+		//删除cookie，注意第四个参数path，要与设置cookie的时候保持一致，否则删除不了
+		setcookie('username','',time()-3600,'/');
+        setcookie('password','',time()-3600,'/');
+		$this->lb_base_lib->echo_json_result(1,'success');
 	}
+	//登出
+	public function signout_session()
+	{
+		setcookie(session_name(),session_id(),time()-3600,'/');
+		$this->lb_base_lib->echo_json_result(1,'success');
+	}
+	//修改密码
 	public function change_passwd()
 	{
 	
@@ -257,7 +266,7 @@ class Sign extends CI_Controller{
 	//设置cookie信息
 	private function update_cookie($username,$password)
 	{
-		$expire = time()+ 3600;
+		$expire = time()+ 600;
 		$path = '/';
 		$domain = '';
 		$secure = false;//http
@@ -306,7 +315,6 @@ class Sign extends CI_Controller{
 		session_start();
 		$result = $_SESSION['online']? true:false;
 		return $result;
-
 	}
 
 
