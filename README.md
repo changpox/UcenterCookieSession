@@ -1,5 +1,5 @@
 # Ucenter_Cookie_Session
-注意：php实现登录系统，通过三种方式(cookie,session,redis)记录用户是否在线。 
+##注意：php实现登录系统，通过三种方式(cookie,session,redis)记录用户是否在线。 
 本项目重点演示通过cookie,session两种方式实现登录系统（这两种不推荐使用，最好是借助redis或者memcached等缓存系统）， 
 包括注册，登录，页面跳转，登出等流程，以及其中的一些注意事项，如正则表达式限制用户输入口令， 密码加密方式，如何保存
 用户登录状态。找回密码和口令防守没有在本项目中演示，请Fork Ucenter_redis。 
@@ -46,3 +46,5 @@
 		(4)使用第三方的OAuth和OpenID 
 总结了登录系统设计的注意点包括密码保存方式，找回方式，面对hack攻击采取的应对措施等。 
 
+本文参考链接：
+http://coolshell.cn/articles/5353.html
