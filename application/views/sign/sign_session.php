@@ -12,14 +12,14 @@ body{
     font-family: "Arial"
 }
 .top{
-    height:500px;
+    height:1000px;
     background-color: #0078d8;
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
 }
-.bottom{
+/*.bottom{
     height: 500px;
     background-color: #c52f24;
-}
+}*/
 .inner-wrapper{
     width: 740px;
     margin: 0 auto ;
@@ -35,7 +35,7 @@ body{
 }
 .inner-sign{
    float: left;
-   width: 200px; 
+   width: 220px; 
    color: #FFF;
    padding-top:20px;
 }
@@ -84,6 +84,16 @@ body{
     padding-top: 5px;
     width: 220px;
 }
+a{
+    text-decoration: none;
+    color:#FFF;
+    font-size: 13px;
+}
+.modify-password{
+    margin-top:10px;
+    margin-left: 150px;
+}
+
 </style>
 </head>
 <body>
@@ -112,12 +122,11 @@ body{
                 <div id="login-password-error" class="error-tip" style="display:none">密码不能为空</div>
                 <button id="btn-signin" class="signup-btn enable" type="submit" >登&nbsp&nbsp录</button>
             </div>
+            <p class='modify-password'><a href="#">无法登录？</a></p>
         </div>
     </div>
 </div>
 <div style="clear:both;"></div>
-<div class="bottom">
-</div>
 <script src="/js/jq.js" ></script>
 <script type="text/javascript">
    var Utils =  new Object();
@@ -309,7 +318,14 @@ $(document).ready(function()
     });
 
 
-
+    $('.modify-password').bind('click',function(){
+        var url = '/sign/modify_password'
+        $.ajax({
+            url:url,
+            type:'post',
+            dataType:'json'
+        });
+    });
 
 
 });

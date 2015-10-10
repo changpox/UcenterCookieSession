@@ -112,6 +112,7 @@ body{
                 <div id="login-password-error" class="error-tip" style="display:none">密码不能为空</div>
                 <button id="btn-signin" class="signup-btn enable" type="submit" >登&nbsp&nbsp录</button>
             </div>
+            <p>忘记密码，点击修改</p>
         </div>
     </div>
 </div>

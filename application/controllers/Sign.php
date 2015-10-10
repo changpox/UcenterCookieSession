@@ -214,7 +214,7 @@ class Sign extends CI_Controller{
 		$this->lb_base_lib->echo_json_result(1,'success');
 	}
 	//修改密码
-	public function change_passwd()
+	public function modify_password()
 	{
 		$host = 'smtp.163.com';
 		$from = 'xiatianliubin@163.com';
