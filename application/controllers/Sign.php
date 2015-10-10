@@ -41,6 +41,11 @@ class Sign extends CI_Controller{
 	{
 
 	}
+
+	public function index_modify_password()
+	{
+		$this->load->view('sign/modify_password');
+	}
 	//注册接口
 	public function signup()
 	{
@@ -213,6 +218,7 @@ class Sign extends CI_Controller{
 		setcookie(session_name(),session_id(),time()-3600,'/');
 		$this->lb_base_lib->echo_json_result(1,'success');
 	}
+
 	//修改密码
 	public function modify_password()
 	{
@@ -221,7 +227,7 @@ class Sign extends CI_Controller{
 		$from_password = '*';
 		$to = 'codergma@163.com';
 		$subject = '修改密码';
-		$body = "点击下面链接修改密码<br/><a href='http://www.baidu.com'>www.baidu.com</a>";
+		$body = "点击下面链接修改密码<br/><a href='http://localhost:8084/sign/index_modify_password'>localhost:8084/sign/index_modify_password</a>";
 		$this->lb_base_lib->send_mail($host,$from,$from_password,$to,$subject,$body);
 	
 	}
