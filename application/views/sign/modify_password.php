@@ -7,13 +7,17 @@
 *{
 	font-family: Microsoft YaHei,sans serif;
 }
+body{
+	background-color: #f6f6f6;
+}
 .container{
 	width: 500px;
-	height: 400px;
 	margin: 0 auto;
 	padding: 10px;
-	margin-top: 200px;
+	margin-top: 75px;
+	padding: 75px 30px;
 	border: 1px solid #333;
+	background-color:#fff;	
 }	
 .container input{
 	width:300px;
