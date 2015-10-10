@@ -221,7 +221,7 @@ class Sign extends CI_Controller{
 		$from_password = '*';
 		$to = 'codergma@163.com';
 		$subject = '修改密码';
-		$body = '点击下面链接修改密码';
+		$body = "点击下面链接修改密码<br/><a href='http://www.baidu.com'>www.baidu.com</a>";
 		$this->lb_base_lib->send_mail($host,$from,$from_password,$to,$subject,$body);
 	
 	}

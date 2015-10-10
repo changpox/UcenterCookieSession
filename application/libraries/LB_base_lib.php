@@ -100,16 +100,20 @@ public function send_mail($host,$from,$from_password,$to,$subject,$body)
 	{
 		$mail = new PHPMailer();
 
+		//$mail->SMTPDebug = 3;
+
 		$mail->isSMTP();
 		$mail->Host = $host;
+		$mail->Port = 587;
+		$mail->SMTPSecure = 'ssl';
 		$mail->SMTPAuth = true;
 		$mail->Username = $from; 
 		$mail->Password = $from_password;
-		$mail->SMTPSecure = 'ssl';
 
 		$mail->setFrom($from);
-		$mail->addAdress($to);
+		$mail->addAddress($to);
 		$mail->isHTML(true);
+		$mail->CharSet = 'utf-8';
 
 		$mail->Subject = $subject;
 		$mail->Body = $body;
