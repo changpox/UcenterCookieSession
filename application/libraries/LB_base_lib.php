@@ -1,5 +1,8 @@
 <?php
 defined('BASEPATH') or die('No direct script access allowe');
+require_once 'PHPMailer.php';
+require_once 'SMTP.php';
+
 class LB_base_lib{
 
 /**
@@ -84,6 +87,38 @@ public function echo_json_result($num=1,$msg="")
 
 	echo json_encode($result);
 	die();
+}
+/**
+ * 发送邮件方法，封装PHPMailer
+ *
+ *
+ *
+*/
+public function send_mail($host,$from,$from_password,$to,$subject,$body)
+{
+	try
+	{
+		$mail = new PHPMailer();
+
+		$mail->isSMTP();
+		$mail->Host = $host;
+		$mail->SMTPAuth = true;
+		$mail->Username = $from; 
+		$mail->Password = $from_password;
+		$mail->SMTPSecure = 'ssl';
+
+		$mail->setFrom($from);
+		$mail->addAdress($to);
+		$mail->isHTML(true);
+
+		$mail->Subject = $subject;
+		$mail->Body = $body;
+		$mail->send();
+		
+	} catch (phpmailerException $e) {
+		echo $mail->ErrorInfo;
+	}
+
 }
 
 

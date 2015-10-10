@@ -197,34 +197,6 @@ class Sign extends CI_Controller{
 	//登陆接口
 	public function signin_redis()
 	{
-        $login_username = addslashes(trim($this->input->post('login_username')));
-		$login_passwd   = addslashes(trim($this->input->post('login_passwd')));
-		//根据用户名获取数据库中用户信息
-		$user = $this->sign_model->get_user_by_username($login_username);
-		//用户名不存在
-		if(empty($user))
-		{
-	      $this->lb_base_lib->echo_json_result(-1,"username dose not exists");
-		} 
-
-		$login_passwd = md5(md5($login_passwd).$user->salt);
-		if ($login_passwd == $user->password)//登录成功
-		{
-			//更新最后登录ip
-			$last_signin_ip = $this->lb_base_lib->real_ip();
-			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
-			//设置cookie信息
-			$this->update_cookie($user->username,$user->password);
-			//如果使用第二种方法的话，需要在登录成功后设置session
-			session_start();
-			$_SESSION['online']=true;
-
-		    $this->lb_base_lib->echo_json_result(1,"signin success");
-		}
-		else//登陆失败
-		{
-		    $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
-		}
 
 	}
 	//登出
@@ -244,6 +216,13 @@ class Sign extends CI_Controller{
 	//修改密码
 	public function change_passwd()
 	{
+		$host = 'smtp.163.com';
+		$from = 'xiatianliubin@163.com';
+		$from_password = '*';
+		$to = 'codergma@163.com';
+		$subject = '修改密码';
+		$body = '点击下面链接修改密码';
+		$this->lb_base_lib->send_mail($host,$from,$from_password,$to,$subject,$body);
 	
 	}
 	//检查用户名格式
