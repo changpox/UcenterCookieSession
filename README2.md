@@ -8,7 +8,7 @@
 *	通过session登录的url=localhost:8084/sign/index_session;登录成功跳转到localhost:8084/portal/index_session;		
 *	登出后回到登录页面；		
 *	coder_igniter.sql是数据库文件; 
-*	下面是项目配置实例
+*	下面是apache配置
 
 
 
