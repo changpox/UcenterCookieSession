@@ -10,6 +10,10 @@
 *	coder_igniter.sql是数据库文件; 
 *	下面是项目配置实例
 
+
+
+
+
 		<VirtualHost *:8084>		
 		DocumentRoot /home/liubin/Downloads/Ucenter_Cookie_Session/root 		
 		<Directory /home/liubin/Downloads/Ucenter_Cookie_Session/root>		
