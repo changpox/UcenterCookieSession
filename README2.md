@@ -3,7 +3,7 @@
 ---
 
 *	使用的框架是CoderIgniter;
-*	项目根目录在/root目录下; 通过/root目录下的.htaccess文件移除url中的index.php;
+*	网站根目录在/root目录下; 通过/root目录下的.htaccess文件移除url中的index.php;
 *	通过cookie登录的url=localhost:8084/sign/sign_cookie;登录成功跳转到localhost:8084/portal/index_cookie;		
 *	通过session登录的url=localhost:8084/sign/index_session;登录成功跳转到localhost:8084/portal/index_session;		
 *	登出后回到登录页面；		
