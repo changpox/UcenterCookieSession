@@ -43,9 +43,10 @@ class Sign_model extends CI_Model{
 					('$username','$email','$password','$regip','$salt')";
 		$this->db->query($query);
 		$num = $this->db->affected_rows();
-    return $num;
+	    return $num;
 	}
 
+	//登录成功后更新信息
 	public function update_signin($last_signin_ip,$time,$username)
 	{
 		$query = "UPDATE ci_user SET lastsigninip='$last_signin_ip',lastsignintime=$time WHERE username='$username'";

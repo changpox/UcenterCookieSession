@@ -12,14 +12,14 @@ body{
     font-family: "Arial"
 }
 .top{
-    height:500px;
+    height:1000px;
     background-color: #0078d8;
-    margin-bottom: 20px;
 }
-.bottom{
+/*.bottom{
     height: 500px;
     background-color: #c52f24;
 }
+*/
 .inner-wrapper{
     width: 740px;
     margin: 0 auto ;
@@ -116,8 +116,6 @@ body{
     </div>
 </div>
 <div style="clear:both;"></div>
-<div class="bottom">
-</div>
 <script src="/js/jq.js" ></script>
 <script type="text/javascript">
    var Utils =  new Object();

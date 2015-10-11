@@ -39,7 +39,7 @@ class Sign extends CI_Controller{
 	}
 	public function index_redis()
 	{
-
+		//未在本项目中实现　请　Fork Ucenter_redis
 	}
 
 	public function index_modify_password()
@@ -90,6 +90,8 @@ class Sign extends CI_Controller{
 
 	}
 	/*
+	以下部分内容在Ucenter_redis中实现；
+
 	*用户名和口令：
 			正则表达式限制用户输入口令；
 			密码加密保存 md5(md5(passwd+salt))；
@@ -124,7 +126,7 @@ class Sign extends CI_Controller{
 		　放在数据库中，然后设置上时限，给用户发一个邮件，这个链接中包含那个md5
 		　，用户通过点击那个链接来自己重置新的口令。
 		(3)更好的做法多重认证。
-  *口令探测防守
+	*口令探测防守
 		(1)验证码
 		(2)用户口令失败次数,并且增加尝试的时间成本
 		(3)系统全局防守,比如系统每天5000次口令错误，就认为遭遇了攻击，
@@ -132,7 +134,7 @@ class Sign extends CI_Controller{
 		(4)使用第三方的OAuth和OpenID
 	*/
 
-	//登陆接口
+	//登录接口
 	public function signin_cookie()
 	{
         $login_username = addslashes(trim($this->input->post('login_username')));
@@ -163,7 +165,7 @@ class Sign extends CI_Controller{
 
 	}
 
-	//登陆接口
+	//登录接口
 	public function signin_session()
 	{
         $login_username = addslashes(trim($this->input->post('login_username')));
@@ -199,10 +201,10 @@ class Sign extends CI_Controller{
 
 	}
 
-	//登陆接口
+	//登录接口
 	public function signin_redis()
 	{
-
+		//在Ucenter_redis中实现
 	}
 	//登出
 	public function signout_cookie()
@@ -222,6 +224,7 @@ class Sign extends CI_Controller{
 	//修改密码
 	public function modify_password()
 	{
+		//未实现，仅实现发送邮件功能，具体实现在Ucenter_redis中
 		$host = 'smtp.163.com';
 		$from = 'xiatianliubin@163.com';
 		$from_password = '*';
