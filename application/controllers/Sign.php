@@ -301,7 +301,7 @@ class Sign extends CI_Controller{
 	public function check_signin_by_session()
 	{
 		session_start();
-		$result = $_SESSION['online']? true:false;
+		$result = isset($_SESSION['online'])? $_SESSION['online']:false;
 		return $result;
 	}
 
