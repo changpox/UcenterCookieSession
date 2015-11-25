@@ -9,7 +9,12 @@ class Sign extends CI_Controller{
 		$this->load->helper('url_helper');
 		$this->load->library('LB_base_lib');
 	}
-
+	/**
+	* index_cookie
+	* 通过cookie方式实现身份认证
+	*
+	* @return void
+	*/
 	public function index_cookie()
 	{
 		// 检查是否已经登陆
@@ -23,6 +28,12 @@ class Sign extends CI_Controller{
 
 		$this->load->view('sign/sign_cookie');
 	}
+	/**
+	* index_session
+	* 通过session方式实现身份认证
+	*
+	* @return void
+	*/
 	public function index_session()
 	{
 		// 检查是否已经登陆
@@ -37,16 +48,23 @@ class Sign extends CI_Controller{
 		$this->load->view('sign/sign_session');
 
 	}
-	public function index_redis()
-	{
-		//未在本项目中实现　请　Fork Ucenter_redis
-	}
 
+	/**
+	* index_modify_password
+	* 修改密码
+	*
+	* @return void
+	*/
 	public function index_modify_password()
 	{
 		$this->load->view('sign/modify_password');
 	}
-	//注册接口
+	/**
+	* signup
+	* 注册接口
+	*
+	* @return json
+	*/
 	public function signup()
 	{
 		$username  = $this->input->post('username');
@@ -134,7 +152,12 @@ class Sign extends CI_Controller{
 		(4)使用第三方的OAuth和OpenID
 	*/
 
-	//登录接口
+	/**
+	* signin_cookie
+	* 通过cookie实现的登录接口
+	*
+	* @return json
+	*/
 	public function signin_cookie()
 	{
         $login_username = addslashes(trim($this->input->post('login_username')));
@@ -165,7 +188,12 @@ class Sign extends CI_Controller{
 
 	}
 
-	//登录接口
+	/**
+	* signin_session
+	* 通过session实现的登录接口
+	*
+	* @return json
+	*/
 	public function signin_session()
 	{
         $login_username = addslashes(trim($this->input->post('login_username')));
