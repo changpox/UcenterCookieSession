@@ -37,10 +37,6 @@ class Portal extends CI_Controller{
 			$this->load->view('sign/sign_session');
 		}
 	}
-	public function index_redis()
-	{
-		$this->load->view('portal/index_redis');
-	}
 
 	public function check_signin_by_cookie()
 	{
@@ -51,7 +47,7 @@ class Portal extends CI_Controller{
 			return false;
 		}
 		$user = $this->sign_model->get_user_by_username($username);
-		$password_check = $this->gen_hash_pwd($user->password);
+		$password_check = $this->_gen_hash_pwd($user->password);
 		if ($password == $password_check) 
 		{
 			return true;
@@ -59,9 +55,14 @@ class Portal extends CI_Controller{
 
 		return false;
 	}
-    //生成hash密码，保存在cookie中，此哈希密码与本地浏览器和ip信息有关
-    //如此以来，即使cookie信息被盗用，也不会登陆到我们的系统
-    private function gen_hash_pwd($password)
+	/**
+	* _gen_hash_pwd
+	* 生成hash密码，保存在cookie中，此哈希密码与本地浏览器和ip信息有关
+	* 如此以来，即使cookie信息被盗用，也不会登录系统;
+	*
+	* @return string
+	*/
+    private function _gen_hash_pwd($password)
     {
         //本机ip
         $ip    = $this->lb_base_lib->real_ip();

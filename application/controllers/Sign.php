@@ -177,7 +177,7 @@ class Sign extends CI_Controller{
 			$last_signin_ip = $this->lb_base_lib->real_ip();
 			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
 			//使用第一种方法，需要设置cookie信息
-			$this->update_cookie($user->username,$user->password);
+			$this->_update_cookie($user->username,$user->password);
 
 		    $this->lb_base_lib->echo_json_result(1,"signin success");
 		}
@@ -215,7 +215,7 @@ class Sign extends CI_Controller{
 			
 			//如果使用第二种方法的话，需要在登录成功后设置session
 			session_start();
-			//如果客户端cookie没有被禁用，设置session的生命周期
+			//如果客户端cookie没有被禁用，设置cookie的生命周期;
 			$life_time = 3600;
 			setcookie(session_name(),session_id(),time()+$life_time,'/');
 			$_SESSION['online']=true;
@@ -228,13 +228,12 @@ class Sign extends CI_Controller{
 		}
 
 	}
-
-	//登录接口
-	public function signin_redis()
-	{
-		//在Ucenter_redis中实现
-	}
-	//登出
+	/*
+	* signout_cookie
+	* 登出
+	*
+	* @return void1
+	*/
 	public function signout_cookie()
 	{
 		//删除cookie，注意第四个参数path，要与设置cookie的时候保持一致，否则删除不了
@@ -242,7 +241,12 @@ class Sign extends CI_Controller{
         setcookie('password','',time()-3600,'/');
 		$this->lb_base_lib->echo_json_result(1,'success');
 	}
-	//登出
+	/**
+	* signout_session
+	* 登出
+	*
+	* @return void1
+	*/
 	public function signout_session()
 	{
 		session_start();
@@ -259,19 +263,7 @@ class Sign extends CI_Controller{
 		$this->lb_base_lib->echo_json_result(1,'success');
 	}
 
-	//修改密码
-	public function modify_password()
-	{
-		//未实现，仅实现发送邮件功能，具体实现在Ucenter_redis中
-		$host = 'smtp.163.com';
-		$from = 'xiatianliubin@163.com';
-		$from_password = '*';
-		$to = 'codergma@163.com';
-		$subject = '修改密码';
-		$body = "点击下面链接修改密码<br/><a href='http://localhost:8084/sign/index_modify_password'>localhost:8084/sign/index_modify_password</a>";
-		$this->lb_base_lib->send_mail($host,$from,$from_password,$to,$subject,$body);
 	
-	}
 	//检查用户名格式
 	public function check_username_formate($username)
 	{
@@ -289,8 +281,13 @@ class Sign extends CI_Controller{
     return preg_match('/[a-zA-Z]+/', $password) && preg_match('/[0-9]+/',$password) && preg_match('/[\s\S]{6,16}$/',$password);
 	}
 
-	//设置cookie信息
-	private function update_cookie($username,$password)
+	/**
+	* _update_cookie
+	* 设置cookie信息
+	* 
+	* @return void
+	*/
+	private function _update_cookie($username,$password)
 	{
 		$expire = time()+ 600;
 		$path = '/';
@@ -298,14 +295,18 @@ class Sign extends CI_Controller{
 		$secure = false;//http
 		$httponly = true;//防止xss攻击　
 
-		$passwd = $this->gen_hash_pwd($password);
+		$passwd = $this->_gen_hash_pwd($password);
 		setcookie('username',$username,$expire,$path,$domain,$secure,$httponly);
 		setcookie('password',$passwd,$expire,$path,$domain,$secure,$httponly);
-        return;
 	}
-	//生成hash密码，保存在cookie中，此哈希密码与本地浏览器和ip信息有关
-	//如此以来，即使cookie信息被盗用，也不会登陆到我们的系统
-	private function gen_hash_pwd($password)
+	/**
+	* _gen_hash_pwd
+	* 生成hash密码，保存在cookie中，此哈希密码与本地浏览器和ip信息有关
+	* 如此以来，即使cookie信息被盗用，也不会登录系统;
+	*
+	* @return string
+	*/
+	private function _gen_hash_pwd($password)
 	{
 		//本机ip
 		$ip    = $this->lb_base_lib->real_ip();
@@ -317,7 +318,12 @@ class Sign extends CI_Controller{
 		return $passwd;
 	}
 
-	//第一种方法：根据cookie中保存的用户名和密码，验证用户是否在线
+	/**
+	* check_signin_by_cookie
+	* 根据cookie中保存的用户名和密码，验证用户是否在线
+	*
+	* @return bool
+	*/
 	public function check_signin_by_cookie()
 	{
 		$username = $this->input->cookie('username');
@@ -327,7 +333,7 @@ class Sign extends CI_Controller{
 			return false;
 		}
 		$user = $this->sign_model->get_user_by_username($username);
-		$password_check = $this->gen_hash_pwd($user->password);
+		$password_check = $this->_gen_hash_pwd($user->password);
 		if ($password == $password_check) 
 		{
 			return true;
@@ -335,13 +341,17 @@ class Sign extends CI_Controller{
 
 		return false;
 	}
-	//第二种方法：根据session判断用户是否在线
+	/**
+	* check_signin_by_session
+	* 根据session判断用户是否在线
+	*
+	* @return bool
+	*/
 	public function check_signin_by_session()
 	{
 		session_start();
 		$result = isset($_SESSION['online'])? $_SESSION['online']:false;
 		return $result;
 	}
-
 
 }
