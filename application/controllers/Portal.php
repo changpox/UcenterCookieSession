@@ -8,7 +8,7 @@ class Portal extends CI_Controller{
 		$this->load->model('portal_model');
 		$this->load->model('sign_model');
 		$this->load->helper('url_helper');
-        $this->load->library('LB_base_lib');
+        $this->load->library('CG_Base_Lib.php');
 	}
 
 	public function index_cookie()
@@ -65,7 +65,7 @@ class Portal extends CI_Controller{
     private function _gen_hash_pwd($password)
     {
         //本机ip
-        $ip    = $this->lb_base_lib->real_ip();
+        $ip    = $this->cg_base_lib->real_ip();
         //生成salt
         $salt  = empty($_SERVER['HTTP_USER_AGENT'])? '~!d@#2%^&?*]|([/{;:}':$_SERVER['HTTP_USER_AGENT'];
         //生成密码

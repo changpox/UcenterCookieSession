@@ -7,7 +7,7 @@ class Sign extends CI_Controller{
 		parent::__construct();
 		$this->load->model('sign_model');
 		$this->load->helper('url_helper');
-		$this->load->library('LB_base_lib');
+		$this->load->library('CG_Base_Lib.php');
 	}
 	/**
 	* index_cookie
@@ -75,36 +75,36 @@ class Sign extends CI_Controller{
 		//验证数据是否合法
 		if (!$this->check_username_formate($username))
 		{
-			$this->lb_base_lib->echo_json_result(-1,'username is illegal');
+			$this->cg_base_lib->echo_json_result(-1,'username is illegal');
 		}
 		if (!$this->check_email_formate($email)) 
 		{
-			$this->lb_base_lib->echo_json_result(-1,'email is illegal');
+			$this->cg_base_lib->echo_json_result(-1,'email is illegal');
 		}
 		if (!$this->check_password_formate($password)) 
 		{
-			$this->lb_base_lib->echo_json_result(-1,'password is illegal');
+			$this->cg_base_lib->echo_json_result(-1,'password is illegal');
 		}
 
 		//检查用户名是否已经注册
 		if ($this->sign_model->check_username_exists($username))
 		{
-			$this->lb_base_lib->echo_json_result(-1,"username is exists");
+			$this->cg_base_lib->echo_json_result(-1,"username is exists");
 		}
 		//检查邮箱是否已经注册
 		if ($this->sign_model->check_email_exists($email))
 		{
-			$this->lb_base_lib->echo_json_result(-1,"email is exists");
+			$this->cg_base_lib->echo_json_result(-1,"email is exists");
 		}
 			
 		//输入信息过滤
 		$username = addslashes(trim($username));
 		$email    = addslashes(trim($email));
 		$password = addslashes(trim($password));
-		$regip    = $this->lb_base_lib->real_ip();
+		$regip    = $this->cg_base_lib->real_ip();
 		//用户信息写入数据库
 		$result = $this->sign_model->add_user($username,$email,$password,$regip);
-		$this->lb_base_lib->echo_json_result($result,"success");
+		$this->cg_base_lib->echo_json_result($result,"success");
 
 	}
 	/*
@@ -121,9 +121,9 @@ class Sign extends CI_Controller{
 			我将使用三种方法实现用户登录状态验证(在下才疏学浅望指正):
 			(1)在cookie中保存用户名和密码，每次页面跳转的时候进行密码验证，正确则登录状态；
 			   这个方法显然太挫了，每次都要与数据库交互显然严重影响性能，那么你可能想，直接
-			   在cookie中保存登录状态true|false，这更挫，太不安全了，不过你可以在session
+			   在cookie中保存登录状态TRUE|FALSE，这更挫，太不安全了，不过你可以在session
 			   中保存，这就是第二种实现方法。
-			(2)在session中保存登陆状态true|false|更多信息,在页面跳转的时候获取session即可，
+			(2)在session中保存登陆状态TRUE|FALSE|更多信息,在页面跳转的时候获取session即可，
 			   因为session是保存在服务器中的， 所以相对安全一些,但是由于默认session是保存在
 			   文件中的，所以当用户数量上来之后，会产生大量小文件，影响系统性能，当然你可以更
 			   换文件系统，或者指定其他存储方式，比如数据库。
@@ -167,23 +167,23 @@ class Sign extends CI_Controller{
 		//用户名不存在
 		if(empty($user))
 		{
-	      $this->lb_base_lib->echo_json_result(-1,"username dose not exists");
+	      $this->cg_base_lib->echo_json_result(-1,"username dose not exists");
 		} 
 
 		$login_passwd = md5(md5($login_passwd).$user->salt);
 		if ($login_passwd == $user->password)//登录成功
 		{
 			//更新最后登录ip
-			$last_signin_ip = $this->lb_base_lib->real_ip();
+			$last_signin_ip = $this->cg_base_lib->real_ip();
 			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
 			//使用第一种方法，需要设置cookie信息
 			$this->_update_cookie($user->username,$user->password);
 
-		    $this->lb_base_lib->echo_json_result(1,"signin success");
+		    $this->cg_base_lib->echo_json_result(1,"signin success");
 		}
 		else//登陆失败
 		{
-		    $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
+		    $this->cg_base_lib->echo_json_result(-1,"username or password was wrong");
 		}
 
 	}
@@ -203,14 +203,14 @@ class Sign extends CI_Controller{
 		//用户名不存在
 		if(empty($user))
 		{
-	      $this->lb_base_lib->echo_json_result(-1,"username dose not exists");
+	      $this->cg_base_lib->echo_json_result(-1,"username dose not exists");
 		} 
 
 		$login_passwd = md5(md5($login_passwd).$user->salt);
 		if ($login_passwd == $user->password)//登录成功
 		{
 			//更新最后登录ip
-			$last_signin_ip = $this->lb_base_lib->real_ip();
+			$last_signin_ip = $this->cg_base_lib->real_ip();
 			$this->sign_model->update_signin($last_signin_ip,time(),$user->username);
 			
 			//如果使用第二种方法的话，需要在登录成功后设置session
@@ -218,13 +218,13 @@ class Sign extends CI_Controller{
 			//如果客户端cookie没有被禁用，设置cookie的生命周期;
 			$life_time = 3600;
 			setcookie(session_name(),session_id(),time()+$life_time,'/');
-			$_SESSION['online']=true;
+			$_SESSION['online']=TRUE;
 
-		    $this->lb_base_lib->echo_json_result(1,"signin success");
+		    $this->cg_base_lib->echo_json_result(1,"signin success");
 		}
 		else//登陆失败
 		{
-		    $this->lb_base_lib->echo_json_result(-1,"username or password was wrong");
+		    $this->cg_base_lib->echo_json_result(-1,"username or password was wrong");
 		}
 
 	}
@@ -239,7 +239,7 @@ class Sign extends CI_Controller{
 		//删除cookie，注意第四个参数path，要与设置cookie的时候保持一致，否则删除不了
 		setcookie('username','',time()-3600,'/');
         setcookie('password','',time()-3600,'/');
-		$this->lb_base_lib->echo_json_result(1,'success');
+		$this->cg_base_lib->echo_json_result(1,'success');
 	}
 	/**
 	* signout_session
@@ -260,7 +260,7 @@ class Sign extends CI_Controller{
 		}
 		//销毁会话
 		session_destroy();
-		$this->lb_base_lib->echo_json_result(1,'success');
+		$this->cg_base_lib->echo_json_result(1,'success');
 	}
 
 	
@@ -292,8 +292,8 @@ class Sign extends CI_Controller{
 		$expire = time()+ 600;
 		$path = '/';
 		$domain = '';
-		$secure = false;//http
-		$httponly = true;//防止xss攻击　
+		$secure = FALSE;//http
+		$httponly = TRUE;//防止xss攻击　
 
 		$passwd = $this->_gen_hash_pwd($password);
 		setcookie('username',$username,$expire,$path,$domain,$secure,$httponly);
@@ -309,7 +309,7 @@ class Sign extends CI_Controller{
 	private function _gen_hash_pwd($password)
 	{
 		//本机ip
-		$ip    = $this->lb_base_lib->real_ip();
+		$ip    = $this->cg_base_lib->real_ip();
 		//生成salt
 		$salt  = empty($_SERVER['HTTP_USER_AGENT'])? '~!d@#2%^&?*]|([/{;:}':$_SERVER['HTTP_USER_AGENT'];
 		//生成密码
@@ -330,16 +330,16 @@ class Sign extends CI_Controller{
 		$password = $this->input->cookie('password');
 		if (empty($username)||empty($password))
 		{
-			return false;
+			return FALSE;
 		}
 		$user = $this->sign_model->get_user_by_username($username);
 		$password_check = $this->_gen_hash_pwd($user->password);
 		if ($password == $password_check) 
 		{
-			return true;
+			return TRUE;
 		}
 
-		return false;
+		return FALSE;
 	}
 	/**
 	* check_signin_by_session
@@ -350,7 +350,7 @@ class Sign extends CI_Controller{
 	public function check_signin_by_session()
 	{
 		session_start();
-		$result = isset($_SESSION['online'])? $_SESSION['online']:false;
+		$result = isset($_SESSION['online'])? $_SESSION['online']:FALSE;
 		return $result;
 	}
 

@@ -1,10 +1,9 @@
 <?php
 defined('BASEPATH') or die('No direct script access allowe');
-require_once 'PHPMailer.php';
-require_once 'SMTP.php';
 
-class LB_base_lib{
 
+class CG_Base_Lib{
+private  $realip = NULL;
 /**
  * 获取用户真是ip
  *
@@ -14,9 +13,9 @@ public function real_ip()
 {
 			static $real_ip = NULL;
 
-			if($realip != NULL)
+			if($this->realip != NULL)
 			{
-				return $realip;
+				return $this->realip;
 			}
 
 			if(isset($_SERVER))
@@ -31,24 +30,24 @@ public function real_ip()
 
 						if($ip != 'unknow')
 						{
-							$realip = ip;
+							$this->realip = ip;
 							break;
 						}
 					}
 				}
 				elseif(isset($_SERVER['HTTP_CLIENT_IP']))
 				{
-					$realip = $_SERVER['HTTP_CLIENT_IP'];
+					$this->realip = $_SERVER['HTTP_CLIENT_IP'];
 				}
 				else
 				{
 					if(isset($_SERVER['REMOTE_ADDR']))
 					{
-						$realip = $_SERVER['REMOTE_ADDR'];
+						$this->realip = $_SERVER['REMOTE_ADDR'];
 					}
 					else
 					{
-						$realip = '0.0.0.0';
+						$this->realip = '0.0.0.0';
 					}
 				}
 			}
@@ -56,21 +55,21 @@ public function real_ip()
 			{
 				if(getenv('HTTP_X_FORWARDED_FOR'))
 				{
-					$realip = getenv('HTTP_X_FORWARDED_FOR');
+					$this->realip = getenv('HTTP_X_FORWARDED_FOR');
 				}
 				elseif(getenv('HTTP_CLIENT_IP'))
 				{
-					$realip = getenv('HTTP_CLIENT_IP');
+					$this->realip = getenv('HTTP_CLIENT_IP');
 				}
 				else
 				{
-					$realip = getenv('REMOTE_ADDR');
+					$this->realip = getenv('REMOTE_ADDR');
 				}
 			}
 
-			preg_match("/[\d\.]{7,15}/",$realip,$onlineip);
-			$realip = !empty($onlineip[0]) ?$onlineip[0] : '0.0.0.0';
-			return $realip;
+			preg_match("/[\d\.]{7,15}/",$this->realip,$onlineip);
+			$this->realip = !empty($onlineip[0]) ?$onlineip[0] : '0.0.0.0';
+			return $this->realip;
 }
 
 /**
