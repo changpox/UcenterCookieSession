@@ -302,7 +302,7 @@ class Sign extends CI_Controller{
 	/**
 	* _gen_hash_pwd
 	* 生成hash密码，保存在cookie中，此哈希密码与本地浏览器和ip信息有关
-	* 如此以来，即使cookie信息被盗用，也不会登录系统;
+	* 如此以来，即使cookie信息被盗用，也不会	轻易登录系统;
 	*
 	* @return string
 	*/
